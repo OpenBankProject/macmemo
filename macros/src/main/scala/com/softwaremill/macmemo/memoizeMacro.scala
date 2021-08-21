@@ -25,11 +25,7 @@ object memoizeMacro {
         callRealBody()
       }
       else {
-        ${cachedMethodId.generatedMemoValName}.get($names, {
-          List(
-            callRealBody()
-          )
-        }).head.asInstanceOf[$returnTypeTree]
+        ${cachedMethodId.generatedMemoValName}.get($names, callRealBody())
       }"""
     }
 
@@ -49,8 +45,8 @@ object memoizeMacro {
         q"""com.softwaremill.macmemo.MemoizeParams($maxSize, ${ttl.toMillis}, $concurrencyLevelOpt)"""
       }
 
-      q"""lazy val ${cachedMethodId.generatedMemoValName}: com.softwaremill.macmemo.Cache[List[Any]] =
-         com.softwaremill.macmemo.BuilderResolver.resolve($buildCacheBucketId).build($buildCacheBucketId, $buildParams)"""
+      q"""lazy val ${cachedMethodId.generatedMemoValName}: com.softwaremill.macmemo.Cache[$returnTypeTree] =
+         com.softwaremill.macmemo.BuilderResolver.resolve($buildCacheBucketId).build[$returnTypeTree]($buildCacheBucketId, $buildParams)"""
 
     }
 
