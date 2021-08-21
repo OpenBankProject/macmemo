@@ -41,7 +41,7 @@ trait MemoCacheBuilder {
    * @tparam V type of a cached value - an annotated method's return type.
    * @return new Cache instance, scoped for particular enclosure instance method.
    */
-  def build[V <: Any : TypeTag](bucketId: String, params: MemoizeParams): Cache[V]
+  def build[V : TypeTag: Manifest](bucketId: String, params: MemoizeParams): Cache[V]
 
 }
 
@@ -52,7 +52,7 @@ object MemoCacheBuilder {
    */
   val guavaMemoCacheBuilder: MemoCacheBuilder = new MemoCacheBuilder {
 
-    override def build[V <: Any : TypeTag](bucketId: String, params: MemoizeParams): Cache[V] = {
+    override def build[V : TypeTag : Manifest](bucketId: String, params: MemoizeParams): Cache[V] = {
       lazy val builder = CacheBuilder.newBuilder()
         .maximumSize(params.maxSize)
         .expireAfterWrite(params.expiresAfterMillis, TimeUnit.MILLISECONDS)
