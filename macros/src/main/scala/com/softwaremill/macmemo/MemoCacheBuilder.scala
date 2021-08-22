@@ -2,7 +2,7 @@ package com.softwaremill.macmemo
 
 import java.util.concurrent.{Callable, TimeUnit}
 import com.google.common.cache.CacheBuilder
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration.Duration
 import scala.reflect.runtime.universe._
 
 /**
@@ -12,8 +12,8 @@ import scala.reflect.runtime.universe._
  * @param expiresAfterMillis expiration time
  * @param concurrencyLevel allowed concurrency among update operations.
  */
-case class MemoizeParams(maxSize: Long, expiresAfterMillis: FiniteDuration, concurrencyLevel: Option[Int]) {
-  def this(expiresAfterMillis: FiniteDuration, maxSize: Long, concurrencyLevel: Option[Int]) = this(maxSize, expiresAfterMillis, concurrencyLevel)
+case class MemoizeParams(maxSize: Long, expiresAfterMillis: Duration, concurrencyLevel: Option[Int]) {
+  def this(expiresAfterMillis: Duration, maxSize: Long, concurrencyLevel: Option[Int]) = this(maxSize, expiresAfterMillis, concurrencyLevel)
 }
 
 trait Cache[V] {
