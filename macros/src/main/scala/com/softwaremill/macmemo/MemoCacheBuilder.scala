@@ -2,6 +2,7 @@ package com.softwaremill.macmemo
 
 import java.util.concurrent.{Callable, TimeUnit}
 import com.google.common.cache.CacheBuilder
+import scala.concurrent.duration.FiniteDuration
 import scala.reflect.runtime.universe._
 
 /**
@@ -11,7 +12,9 @@ import scala.reflect.runtime.universe._
  * @param expiresAfterMillis expiration time
  * @param concurrencyLevel allowed concurrency among update operations.
  */
-case class MemoizeParams(maxSize: Long, expiresAfterMillis: Long, concurrencyLevel: Option[Int])
+case class MemoizeParams(maxSize: Long, expiresAfterMillis: FiniteDuration, concurrencyLevel: Option[Int]) {
+  def this(expiresAfterMillis: FiniteDuration, maxSize: Long, concurrencyLevel: Option[Int]) = this(maxSize, expiresAfterMillis, concurrencyLevel)
+}
 
 trait Cache[V] {
 
@@ -55,7 +58,7 @@ object MemoCacheBuilder {
     override def build[V : TypeTag : Manifest](bucketId: String, params: MemoizeParams): Cache[V] = {
       lazy val builder = CacheBuilder.newBuilder()
         .maximumSize(params.maxSize)
-        .expireAfterWrite(params.expiresAfterMillis, TimeUnit.MILLISECONDS)
+        .expireAfterWrite(params.expiresAfterMillis.toMillis, TimeUnit.MILLISECONDS)
 
       lazy val cache = params.concurrencyLevel.map(builder.concurrencyLevel(_)).getOrElse(builder)
         .build[List[Any], AnyRef]() // the reason of use AnyRef instead of V: V type is Any, but build method's second type parameter is AnyRef
