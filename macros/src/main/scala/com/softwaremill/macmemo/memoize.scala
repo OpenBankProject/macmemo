@@ -12,13 +12,13 @@ class memoize(maxSize: => Long, expiresAfter: => Duration, concurrencyLevel: => 
 
 /**
  *
- * @param expiresAfter cache ttl, default is 100 years
+ * @param ttl cache ttl, default is 100 years
  * @param maxSize cache item max count
  * @param concurrencyLevel concurrency count
  * @param cacheBuilder one implicit value of type MemoCacheBuilder
  */
-class OBPMemoize(expiresAfter: => Duration = 100 * 365 days,
+class OBPMemoize(ttl: => Duration = 100 * 365 days,
                  maxSize: => Long = Long.MaxValue,
                  concurrencyLevel: => Option[Int] = None)
                 (implicit val cacheBuilder: MemoCacheBuilder)
-  extends memoize(maxSize, expiresAfter, concurrencyLevel)
+  extends memoize(maxSize, ttl, concurrencyLevel)
