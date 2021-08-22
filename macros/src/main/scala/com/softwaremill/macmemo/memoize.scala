@@ -12,7 +12,7 @@ class memoize(maxSize: => Long, expiresAfter: => Duration, concurrencyLevel: => 
 
 /**
  *
- * @param expiresAfter cache ttl
+ * @param expiresAfter cache ttl, default is 100 years
  * @param maxSize cache item max count
  * @param concurrencyLevel concurrency count
  * @param cacheBuilder one implicit value of type MemoCacheBuilder

@@ -91,13 +91,7 @@ object memoizeMacro {
       debug(s"Macro args: $args")
       args
     }
-    debug(s"annottees, mirror = ${c.mirror}")
-    debug(s"annottees, prefix = ${c.prefix.tree}")
-    debug(s"annottees, mirror = ${c.universe}")
-    debug(s"annottees, internal = ${c.internal}")
-    debug(s"annottees, PATTERNmode = ${c.PATTERNmode}")
-    debug(s"annottees, TERMmode = ${c.TERMmode}")
-    debug(s"annottees, TYPEmode = ${c.TYPEmode}")
+
     val inputs = annottees.map(_.tree).toList
     val (_, expandees) = inputs match {
       case (functionDefinition: DefDef) :: rest =>
