@@ -111,7 +111,7 @@ properties:
 add dependency:
 ````xml
 <dependency>
-  <groupId>com.github.oldbig</groupId>
+  <groupId>com.github.OpenBankProject</groupId>
   <artifactId>macmemo</artifactId>
   <version>0.6-OBP-SNAPSHOT</version>
 </dependency>
