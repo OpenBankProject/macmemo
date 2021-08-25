@@ -25,22 +25,6 @@ class GraphBuilder {
 
 }
 ````
-Or you can use OBPMemoize annotation, add implicit variable of type MemoCacheBuilder:
-````scala
-import com.softwaremill.macmemo.memoize
-import scala.concurrent.duration._
-
-class GraphBuilder {
-  implicit val builder: MemoCacheBuilder = ??? // supply your implementation
-  val ttl = 2 hours
-  
-  @OBPMemoize(ttl)
-  def creatGraph(elementCount: Int): Graph = {
-    someExpensiveCode()
-  }
-
-}
-````
 
 Parameters (for more details see [Guava docs](http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilder.html)):
 * maxSize: Specifies the maximum number of entries the cache may contain.
@@ -152,7 +136,24 @@ add paradise plugin:
   </configuration>
 </plugin>
 ````
+OBPMemoize annotation usage:
+----------------------------
+the same as memoize annotation, except the parameter order, and add implicit variable of type MemoCacheBuilder:
+````scala
+import com.softwaremill.macmemo.memoize
+import scala.concurrent.duration._
 
+class GraphBuilder {
+  implicit val builder: MemoCacheBuilder = ??? // supply your implementation
+  val ttl = 2 hours
+  
+  @OBPMemoize(ttl)
+  def creatGraph(elementCount: Int): Graph = {
+    someExpensiveCode()
+  }
+
+}
+````
 
 Credits
 -------
