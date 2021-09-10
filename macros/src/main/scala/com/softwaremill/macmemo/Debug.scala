@@ -31,5 +31,8 @@ private[macmemo] class Debug {
     ident -= 1
   }
 
-  private val enabled = System.getProperty("macmemo.debug") != null
+  private val enabled =
+    List(System.getProperty("macmemo.debug"),System.getProperty("macmemo_debug"),
+      System.getenv("macmemo.debug"), System.getenv("macmemo_debug"))
+    .exists(null !=)
 }

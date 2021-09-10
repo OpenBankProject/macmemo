@@ -1,8 +1,9 @@
 package com.softwaremill.macmemo
 
 import java.util.concurrent.{Callable, TimeUnit}
-
 import com.google.common.cache.CacheBuilder
+import scala.concurrent.duration.Duration
+import scala.reflect.runtime.universe._
 
 /**
  * Memoization parameters container.
@@ -11,7 +12,9 @@ import com.google.common.cache.CacheBuilder
  * @param expiresAfterMillis expiration time
  * @param concurrencyLevel allowed concurrency among update operations.
  */
-case class MemoizeParams(maxSize: Long, expiresAfterMillis: Long, concurrencyLevel: Option[Int])
+case class MemoizeParams(maxSize: Long, expiresAfterMillis: Duration, concurrencyLevel: Option[Int]) {
+  def this(expiresAfterMillis: Duration, maxSize: Long, concurrencyLevel: Option[Int]) = this(maxSize, expiresAfterMillis, concurrencyLevel)
+}
 
 trait Cache[V] {
 
@@ -41,7 +44,7 @@ trait MemoCacheBuilder {
    * @tparam V type of a cached value - an annotated method's return type.
    * @return new Cache instance, scoped for particular enclosure instance method.
    */
-  def build[V <: Object](bucketId: String, params: MemoizeParams): Cache[V]
+  def build[V : TypeTag: Manifest](bucketId: String, params: MemoizeParams): Cache[V]
 
 }
 
@@ -52,17 +55,18 @@ object MemoCacheBuilder {
    */
   val guavaMemoCacheBuilder: MemoCacheBuilder = new MemoCacheBuilder {
 
-    override def build[V <: Object](bucketId: String, params: MemoizeParams): Cache[V] = {
+    override def build[V : TypeTag : Manifest](bucketId: String, params: MemoizeParams): Cache[V] = {
       lazy val builder = CacheBuilder.newBuilder()
         .maximumSize(params.maxSize)
-        .expireAfterWrite(params.expiresAfterMillis, TimeUnit.MILLISECONDS)
+        .expireAfterWrite(params.expiresAfterMillis.toMillis, TimeUnit.MILLISECONDS)
 
-      lazy val cache = params.concurrencyLevel.map(builder.concurrencyLevel(_)).getOrElse(builder).build[List[Any], V]()
+      lazy val cache = params.concurrencyLevel.map(builder.concurrencyLevel(_)).getOrElse(builder)
+        .build[List[Any], AnyRef]() // the reason of use AnyRef instead of V: V type is Any, but build method's second type parameter is AnyRef
 
       new Cache[V] {
-        override def get(key: List[Any], computeValue: => V): V = cache.get(key, new Callable[V] {
-          override def call(): V = computeValue
-        })
+        override def get(key: List[Any], computeValue: => V): V = cache.get(key, new Callable[AnyRef] {
+          override def call(): AnyRef =  computeValue.asInstanceOf[AnyRef]
+        }).asInstanceOf[V]
       }
 
     }

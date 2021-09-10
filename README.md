@@ -14,6 +14,7 @@ returned values for given argument list. Memoization is scoped for particular cl
 Example usage:  
 ````scala
 import com.softwaremill.macmemo.memoize
+import scala.concurrent.duration._
 
 class GraphBuilder {
 
@@ -52,6 +53,10 @@ In order to disable MacMemo for tests, add following test options to your `build
 ````scala
 testOptions in Test += Tests.Setup(() => System.setProperty("macmemo.disable", "true"))
 ````
+Or you can set vm argument by ```-Dmacmemo.disable=true```, Or set environment variable like this:
+````shell
+export macmemo_disable=true
+````
 
 Debugging
 ---------
@@ -81,6 +86,74 @@ Whenever custom memo builder cannot be found in class definition scope, appropri
 [info]    ^
 ```
 Currently there is no way to turn them off.
+
+Installation, using with maven
+----------------------------
+pom.xml file :
+
+add jitpack repository:
+````xml
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+````
+
+properties:
+````xml
+<properties>
+        <scala.version>2.12</scala.version>
+        <scala.compiler>2.12.10</scala.compiler>
+</properties>
+````
+add dependency:
+````xml
+<dependency>
+  <groupId>com.github.OpenBankProject</groupId>
+  <artifactId>macmemo</artifactId>
+  <version>0.6-OBP-SNAPSHOT</version>
+</dependency>
+````
+
+add paradise plugin:
+````xml
+<plugin>
+  <groupId>net.alchim31.maven</groupId>
+  <artifactId>scala-maven-plugin</artifactId>
+  <version>4.3.1</version>
+  <configuration>
+    <compilerPlugins>
+      <!--scala 2.12.x need the paradise plugin to support macros annotation, 2.13.x value not need this plugin,
+      just add -Ymacro-annotations flag -->
+      <compilerPlugin>
+        <groupId>org.scalamacros</groupId>
+        <artifactId>paradise_${scala.compiler}</artifactId>
+        <version>2.1.1</version>
+      </compilerPlugin>
+    </compilerPlugins>
+  </configuration>
+</plugin>
+````
+OBPMemoize annotation usage:
+----------------------------
+the same as memoize annotation, except the parameter order, and add implicit variable of type MemoCacheBuilder:
+````scala
+import com.softwaremill.macmemo.memoize
+import scala.concurrent.duration._
+
+class GraphBuilder {
+  implicit val builder: MemoCacheBuilder = ??? // supply your implementation
+  val ttl = 2 hours
+  
+  @OBPMemoize(ttl)
+  def creatGraph(elementCount: Int): Graph = {
+    someExpensiveCode()
+  }
+
+}
+````
 
 Credits
 -------

@@ -52,7 +52,7 @@ package importScopeBuilder {
     class ClassWithMemo {
 
       @memoize(2, 5 days)
-      def someMethod(param: Int) = param * Random.nextInt(100000)
+      def someMethod(param: Int): Int = param * Random.nextInt(100000)
 
     }
 

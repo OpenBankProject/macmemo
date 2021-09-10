@@ -1,4 +1,5 @@
 package com.softwaremill.macmemo
+import scala.reflect.runtime.universe._
 
 class TestMemoCacheBuilder extends MemoCacheBuilder {
 
@@ -22,7 +23,7 @@ class TestMemoCacheBuilder extends MemoCacheBuilder {
     def withArgs(args: Any*): Int = hits.map(_.withArgs(args.toList)).getOrElse(0)
   }
 
-  override def build[V <: Object](bucketId: String, p: MemoizeParams): Cache[V] = {
+  override def build[V : TypeTag: Manifest](bucketId: String, p: MemoizeParams): Cache[V] = {
     new Cache[V] {
       override def get(key: List[Any], compute: => V): V = {
         spy += (bucketId -> spy.get(bucketId).map(_.registerHitFor(key)).getOrElse(MethodHits(1, Map(key -> 1))))
