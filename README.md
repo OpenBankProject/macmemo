@@ -104,16 +104,16 @@ add jitpack repository:
 properties:
 ````xml
 <properties>
-        <scala.version>2.12</scala.version>
-        <scala.compiler>2.12.10</scala.compiler>
+    <scala.version>2.12</scala.version>
+    <scala.compiler>2.12.10</scala.compiler>
 </properties>
 ````
 add dependency:
 ````xml
 <dependency>
-  <groupId>com.github.OpenBankProject</groupId>
-  <artifactId>macmemo</artifactId>
-  <version>0.6-OBP-SNAPSHOT</version>
+    <groupId>com.github.OpenBankProject</groupId>
+    <artifactId>macmemo</artifactId>
+    <version>0.6-OBP-SNAPSHOT</version>
 </dependency>
 ````
 
